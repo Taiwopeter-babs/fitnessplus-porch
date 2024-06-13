@@ -23,7 +23,7 @@ export class MemberRepository {
     private subscriptionRepo: SubscriptionRepository,
   ) {}
 
-  public async getUser(id: number): Promise<Member> {
+  public async getMember(id: number): Promise<Member> {
     return (await this.findMemberById(id)) as Member;
   }
 
@@ -87,8 +87,8 @@ export class MemberRepository {
         firstName: member.firstName,
         lastName: member.lastName,
         membershipType: member.membershipType,
-        annualStartDate: member.annualStartDate,
-        annualDueDate: member.annualDueDate,
+        startDate: member.startDate,
+        dueDate: member.dueDate,
       };
 
       const newMember = await this.repo.save(dataToSave as Member);
@@ -103,7 +103,7 @@ export class MemberRepository {
 
       await Promise.all([...memberSubscriptions]);
 
-      return newMember;
+      return MemberDto.fromEntity(newMember);
     } catch (error) {
       //   console.error(error);
       exceptionHandler(error);
@@ -166,6 +166,7 @@ export class MemberRepository {
     try {
       const member = await this.repo.findOne({
         where: { id: id },
+        relations: { subscriptions: true },
       });
 
       if (!member) {

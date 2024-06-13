@@ -23,7 +23,7 @@ import Subscription from '../subscription/subscription.model';
         entities: [Member, Subscription],
         migrations: ['./migrations/*.ts'],
         migrationsTableName: 'fitnessplus_migrations',
-        ssl: configService.get<string>('NODE_ENV') === 'development',
+        // ssl: configService.get<string>('NODE_ENV') === 'development',
       }),
     }),
   ],

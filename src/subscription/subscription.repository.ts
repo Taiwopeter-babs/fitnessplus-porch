@@ -1,4 +1,4 @@
-import { FindManyOptions, Repository } from 'typeorm';
+import { FindManyOptions, FindOptionsWhere, Repository } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -25,46 +25,33 @@ export class SubscriptionRepository {
   public async getMemberSubscription(
     params: Omit<ISubscriptionUpdate, 'data'>,
   ): Promise<Subscription> {
-    const { memberId, subscriptionId } = params;
+    return (await this.findSubscriptionByCondition(params)) as Subscription;
+  }
 
-    return (await this.findSubscriptionByMemberId(
-      subscriptionId,
-      memberId,
-    )) as Subscription;
+  public async getSubscription(subscriptionId: number): Promise<Subscription> {
+    return (await this.findSubscriptionByCondition({
+      id: subscriptionId,
+    })) as Subscription;
   }
 
   public async getPagedMembersSubscriptions(
+    memberId: number,
     params: IPagination,
   ): Promise<PagedMemberSubscriptionsDto | void> {
-    try {
-      const pageParams = getPageParams(params);
+    const memberSubscriptions = await this.getPagedSubscriptions(
+      params,
+      memberId,
+    );
 
-      const paginationOptions: FindManyOptions<Subscription> = {
-        skip: pageParams.skip,
-        take: pageParams.pageSize,
-        order: { name: 'ASC' },
-      };
+    return memberSubscriptions;
+  }
 
-      const [itemsCount, items] = await Promise.all([
-        this.repo.count(),
-        this.repo.find({ ...paginationOptions }),
-      ]);
+  public async getAllSubscriptions(
+    params: IPagination,
+  ): Promise<PagedMemberSubscriptionsDto | void> {
+    const subscriptions = await this.getPagedSubscriptions(params);
 
-      const totalPages = Math.ceil(itemsCount / pageParams.pageSize);
-
-      const data: PagedMemberSubscriptionsDto = {
-        subscriptions: items.map(SubscriptionDto.fromEntity),
-        currentPage: params.pageNumber,
-        pageSize: pageParams.pageSize,
-        totalPages: totalPages,
-        hasNext: pageParams.pageNumber < totalPages,
-        hasPrevious: pageParams.pageNumber > 1,
-      };
-
-      return data;
-    } catch (error) {
-      exceptionHandler(error);
-    }
+    return subscriptions;
   }
 
   public async createSubscription(params: ISubscriptionCreate) {
@@ -94,10 +81,10 @@ export class SubscriptionRepository {
     try {
       const { memberId, subscriptionId, data } = params;
 
-      (await this.findSubscriptionByMemberId(
-        subscriptionId,
+      (await this.findSubscriptionByCondition({
+        id: subscriptionId,
         memberId,
-      )) as Subscription;
+      })) as Subscription;
 
       const updateData = {
         startDate: data.startDate,
@@ -118,10 +105,10 @@ export class SubscriptionRepository {
     subscriptionId: number,
     memberId: number,
   ) {
-    (await this.findSubscriptionByMemberId(
-      subscriptionId,
+    (await this.findSubscriptionByCondition({
+      id: subscriptionId,
       memberId,
-    )) as Subscription;
+    })) as Subscription;
 
     try {
       await this.repo
@@ -157,20 +144,55 @@ export class SubscriptionRepository {
     }
   }
 
-  private async findSubscriptionByMemberId(
-    subscriptionId: number,
-    memberId: number,
+  private async findSubscriptionByCondition(
+    condition: FindOptionsWhere<Subscription>,
   ): Promise<Subscription | void> {
     try {
       const subscription = await this.repo.findOne({
-        where: { id: subscriptionId, memberId: memberId },
+        where: condition,
       });
 
       if (!subscription) {
-        throw new SubscriptionNotFoundException(subscriptionId);
+        throw new SubscriptionNotFoundException(condition.id as number);
       }
 
       return subscription;
+    } catch (error) {
+      exceptionHandler(error);
+    }
+  }
+
+  private async getPagedSubscriptions(
+    params: IPagination,
+    memberId?: number,
+  ): Promise<PagedMemberSubscriptionsDto | void> {
+    try {
+      const pageParams = getPageParams(params);
+
+      const paginationOptions: FindManyOptions<Subscription> = {
+        skip: pageParams.skip,
+        take: pageParams.pageSize,
+        order: { name: 'ASC' },
+        where: memberId ? { memberId: memberId } : {},
+      };
+
+      const [itemsCount, items] = await Promise.all([
+        this.repo.count(),
+        this.repo.find({ ...paginationOptions }),
+      ]);
+
+      const totalPages = Math.ceil(itemsCount / pageParams.pageSize);
+
+      const data: PagedMemberSubscriptionsDto = {
+        subscriptions: items.map(SubscriptionDto.fromEntity),
+        currentPage: params.pageNumber,
+        pageSize: pageParams.pageSize,
+        totalPages: totalPages,
+        hasNext: pageParams.pageNumber < totalPages,
+        hasPrevious: pageParams.pageNumber > 1,
+      };
+
+      return data;
     } catch (error) {
       exceptionHandler(error);
     }

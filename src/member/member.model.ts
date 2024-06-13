@@ -3,8 +3,10 @@ import BaseModel from '../utils/base.model';
 import { Entity, Column, OneToMany, Index } from 'typeorm';
 
 export enum MembershipType {
-  ANNUAL = 'Annual Basic',
-  MONTHLY = 'Monthly Premium',
+  ANNUAL_BASIC = 'Annual Basic',
+  ANNUAL_PREMIUM = 'Annual Premium',
+  MONTHLY_BASIC = 'Monthly Basic',
+  MONTHLY_PREMIUM = 'Monthly Premium',
 }
 
 @Entity('members')
@@ -36,7 +38,6 @@ export default class Member extends BaseModel {
     type: 'enum',
     enum: MembershipType,
     nullable: false,
-    default: MembershipType.ANNUAL,
   })
   public membershipType: MembershipType;
 
@@ -50,13 +51,13 @@ export default class Member extends BaseModel {
     type: 'date',
     nullable: false,
   })
-  public annualStartDate: string;
+  public startDate: string;
 
   @Column({
     type: 'date',
     nullable: false,
   })
-  public annualDueDate: string;
+  public dueDate: string;
 
   @Column({
     type: 'integer',

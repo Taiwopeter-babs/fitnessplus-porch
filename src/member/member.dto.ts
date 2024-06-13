@@ -33,11 +33,11 @@ export class BaseDto {
 
   @IsDateString()
   @IsNotEmpty()
-  public annualStartDate: string;
+  public startDate: string;
 
   @IsDateString()
   @IsNotEmpty()
-  public annualDueDate: string;
+  public dueDate: string;
 
   @IsNumber()
   @IsDefined()
@@ -74,10 +74,10 @@ export class MemberDto {
   public email: string;
 
   @Expose()
-  public annualStartDate: string;
+  public startDate: string;
 
   @Expose()
-  public annualDueDate: string;
+  public dueDate: string;
 
   @Expose()
   public isFirstMonth: boolean;
