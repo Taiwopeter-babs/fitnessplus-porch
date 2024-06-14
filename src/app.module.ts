@@ -7,6 +7,8 @@ import { SubscriptionModule } from './subscription/subscription.module';
 import { ConfigModule } from '@nestjs/config';
 
 import configuration from './utils/config';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronModule } from './cron/cron.module';
 
 @Module({
   imports: [
@@ -18,6 +20,9 @@ import configuration from './utils/config';
       cache: true,
       isGlobal: true,
     }),
+    // Scheduler for cron jobs
+    ScheduleModule.forRoot(),
+    CronModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -48,6 +48,12 @@ export default class Member extends BaseModel {
   public isFirstMonth: boolean;
 
   @Column({
+    type: 'boolean',
+    nullable: false,
+  })
+  public isPaid: boolean;
+
+  @Column({
     type: 'date',
     nullable: false,
   })

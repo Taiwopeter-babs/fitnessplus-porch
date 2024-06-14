@@ -40,6 +40,12 @@ export default class Subscription extends BaseModel {
   })
   public memberId: number;
 
+  @Column({
+    type: 'boolean',
+    nullable: false,
+  })
+  public isPaid: boolean;
+
   @ManyToOne(() => Member, (member) => member.subscriptions)
   member: Member;
 }

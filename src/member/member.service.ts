@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { MemberRepository } from './member.repository';
 import { MemberCreateDto, MemberDto, MemberUpdateDto } from './member.dto';
 import { IPagination, PagedMemberDto } from '../utils/types';
+import { FindOptionsWhere } from 'typeorm';
+import Member from './member.model';
 
 @Injectable()
 export class MemberService {
@@ -19,6 +21,14 @@ export class MemberService {
     )) as PagedMemberDto;
 
     return data;
+  }
+
+  public async getMembersByCondition(condition: FindOptionsWhere<Member>) {
+    const members = (await this._repo.getMembersByCondition(
+      condition,
+    )) as Member[];
+
+    return members.map(MemberDto.fromEntity);
   }
 
   public async createMember(data: MemberCreateDto) {

@@ -1,4 +1,4 @@
-import { FindManyOptions, Repository } from 'typeorm';
+import { FindManyOptions, FindOptionsWhere, Repository } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -25,6 +25,12 @@ export class MemberRepository {
 
   public async getMember(id: number): Promise<Member> {
     return (await this.findMemberById(id)) as Member;
+  }
+
+  public async getMembersByCondition(condition: FindOptionsWhere<Member>) {
+    const members = await this.findMembersByCondition(condition);
+
+    return members;
   }
 
   public async getPagedMembers(
@@ -174,6 +180,21 @@ export class MemberRepository {
       }
 
       return member;
+    } catch (error) {
+      exceptionHandler(error);
+    }
+  }
+
+  private async findMembersByCondition(
+    condition: FindOptionsWhere<Member>,
+  ): Promise<Member[] | void> {
+    try {
+      const members = await this.repo.find({
+        where: condition,
+        relations: { subscriptions: true },
+      });
+
+      return members;
     } catch (error) {
       exceptionHandler(error);
     }
