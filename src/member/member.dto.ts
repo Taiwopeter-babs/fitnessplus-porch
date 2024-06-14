@@ -41,7 +41,7 @@ export class BaseDto {
 
   @IsNumber()
   @IsDefined()
-  public annualAmount: number;
+  public amount: number;
 
   @IsArray()
   @IsOptional()

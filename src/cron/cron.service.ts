@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { format, getMonth, getYear } from 'date-fns';
 import { FindOptionsWhere, Raw } from 'typeorm';
 
@@ -7,21 +7,45 @@ import { SubscriptionService } from '../subscription/subscription.service';
 
 import Member from '../member/member.model';
 import { IDateParams } from './cron.types';
+import { Cron } from '@nestjs/schedule';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
+import { catchError, throwError } from 'rxjs';
+import { INewMembersEmail } from 'src/email/email.type';
 
 @Injectable()
 export class CronService {
+  private readonly logger = new Logger(CronService.name);
   constructor(
     private memberService: MemberService,
     private subscriptionService: SubscriptionService,
+    @Inject('EMAIL_SERVICE') private emailService: ClientProxy,
   ) {}
 
-  // method to send jobs to email queue for processing
+  /**
+   * handle send new members jobs to email queue for processing.
+   * This job is run at 7:30am Sunday-Saturday
+   */
+  // @Cron('30 7 * * 0-6')
+  @Cron('0 49 23 * * 1-7')
+  public async handleNewMembersEmail() {
+    const newMembersData = await this.getDueAnnualNewMembers();
+
+    console.log('Cron service running');
+    this.logger.debug('Called when the current second is 45');
+    return this.emailService
+      .send({ cmd: 'newMembersEmailNofitications' }, newMembersData)
+      .pipe(
+        catchError((error) =>
+          throwError(() => new RpcException(error.response)),
+        ),
+      );
+  }
 
   /**
    * Gets the new members who subscribed for annual basic/premium
    * and subscriptions are due `reminderDays` from current date.
    */
-  public async getDueAnnualNewMembers(reminderDays: number) {
+  public async getDueAnnualNewMembers() {
     // get current date string
     const { currentDateString } = this.getCurrentDateParams();
 
@@ -29,16 +53,29 @@ export class CronService {
     // match the current date
     const condition: FindOptionsWhere<Member> = {
       isFirstMonth: true,
-      dueDate: Raw((alias) => `${alias} - :days = :date`, {
-        days: reminderDays,
+      dueDate: Raw((alias) => `${alias} - INTERVAL '7 days' = :date`, {
+        // days: reminderDays,
         date: currentDateString,
       }),
+      isPaid: false,
     };
 
-    const dueAnnualMembers =
+    const dueNewAnnualMembers =
       await this.memberService.getMembersByCondition(condition);
 
-    return dueAnnualMembers;
+    const membersEmailData: INewMembersEmail[] = dueNewAnnualMembers.map(
+      (member) => {
+        const formattedDueDate = format(member.dueDate, 'MMMM dd, yyyy');
+        return {
+          memberFirstName: member.firstName,
+          membershipType: member.membershipType,
+          dueDate: formattedDueDate,
+          invoiceLink: member.invoiceLink,
+        };
+      },
+    );
+
+    return membersEmailData;
   }
 
   /**

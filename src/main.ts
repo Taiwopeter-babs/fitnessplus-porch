@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ICorsConfig } from './utils/types';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { MicroServicesExceptionFilter } from './utils/exceptions/exceptionFilter';
 
@@ -17,11 +17,6 @@ async function bootstrap() {
 
   // global path prefix and versioning
   app.setGlobalPrefix('api');
-
-  app.enableVersioning({
-    type: VersioningType.URI,
-    prefix: 'v1',
-  });
 
   // global validation pipe
   app.useGlobalPipes(new ValidationPipe({ transform: true }));

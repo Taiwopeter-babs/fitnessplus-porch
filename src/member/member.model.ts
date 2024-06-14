@@ -69,7 +69,7 @@ export default class Member extends BaseModel {
     type: 'integer',
     nullable: false,
   })
-  public annualAmount: number;
+  public amount: number;
 
   @Column({
     type: 'varchar',

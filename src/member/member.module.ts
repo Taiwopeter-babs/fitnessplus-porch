@@ -10,5 +10,6 @@ import { SubscriptionModule } from '../subscription/subscription.module';
   imports: [TypeOrmModule.forFeature([Member]), SubscriptionModule],
   providers: [MemberService, MemberRepository],
   controllers: [MemberController],
+  exports: [MemberService],
 })
 export class MemberModule {}

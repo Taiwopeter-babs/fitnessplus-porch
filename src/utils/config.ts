@@ -17,6 +17,10 @@ const CONFIG = {
   RABBITMQ_PASSWORD: process.env.RABBITMQ_PASSWORD as string,
   RABBITMQ_HOST: process.env.RABBITMQ_HOST as string,
   RABBITMQ_QUEUE_NAME: process.env.RABBITMQ_QUEUE_NAME,
+
+  MJ_APIKEY_PUBLIC: process.env.MJ_APIKEY_PUBLIC as string,
+  MJ_APIKEY_PRIVATE: process.env.MJ_APIKEY_PRIVATE as string,
+
   NODE_ENV: process.env.NODE_ENV as 'development' | 'production',
   PORT: parseInt(process.env.PORT as string, 10) || 3001,
 };

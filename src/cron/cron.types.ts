@@ -1,10 +1,12 @@
 export interface IAnnualNewMembersEmail {
   membershipType: string;
-  totalSubscriptionAmount: number;
+  firstMonthSubscriptionAmount: number;
+  subsequentMonthlyAmount: number;
   invoiceLink: string;
 }
 
 export interface IExistingMembersEmail {
+  membershipType: string;
   serviceName: string;
   totalMonthlyAmount: number;
   invoiceLink: string;

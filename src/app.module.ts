@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './utils/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronModule } from './cron/cron.module';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CronModule } from './cron/cron.module';
     // Scheduler for cron jobs
     ScheduleModule.forRoot(),
     CronModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
