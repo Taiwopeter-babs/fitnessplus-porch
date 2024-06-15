@@ -1,73 +1,28 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Porchplus backend assessment (Fitness+ Gym use-case)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Working out at the gym requires a lot of patience and hard work, and so does building a billing software for reminding gym members of their upcoming payments.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+ Fitness+ gym billing software takes into account the various offerings the gym has for members. This implemetation makes the following assumptions and thus, their design implications:
 
-## Description
+## Assumptions and Design Implications
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Assumption One**: A member can subscribe for a one-time annual membership (basic or premium), and add several add-ons to the membership plan.
 
-## Installation
+  - **Design Implication**: In addition to a `members` table (See model [here](./src/member/member.model.ts)) that stores the basic information and main subscription plan, a `subscriptions` table (See model [here](./src/subscription/subscription.model.ts)) that stores various add-ons services rendered by Fitness+ gym.
 
-```bash
-$ npm install
-```
+    Each member can have many subscriptions, hence the `members` table share a **one-many** relationship with the `subscriptions` table.
 
-## Running the app
+- **Assumption Two**: Running daily cron jobs and scheduling email deliveries on the same server are bound to increase response latency as we can't determine when user requests are bound to spike.
 
-```bash
-# development
-$ npm run start
+  - **Design Implication**: To improve system scalability, RabbitMQ message broker was introduced. A [CronService](./src/cron/cron.service.ts) class does the heavy lifting by using dependency injection to access the methods in the [MemberService](./src/member/member.service.ts) class, then subscribes to events provided by the [EmailController](./src/email/email.controller.ts) class through the RabbitMQ message broker.
 
-# watch mode
-$ npm run start:dev
+  Email templates are also provided [here](./src/email/templates/) for email dynamic email delivery. This is a I/O intensive task, thus using a message broker decouples the classes and can enable scalbality.
 
-# production mode
-$ npm run start:prod
-```
+## Usage
 
-## Test
+This application runs on node 20.10.0 and uses docker to start the postgresql and rabbitmq.
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+- Clone the repo
+- Install dependencies with `npm install`
+- Start the docker process with `docker compose up -d`
+- Start the application with `npm run start:dev`

@@ -27,7 +27,7 @@ export class CronService {
    * handle send new members jobs to rabbitmq email queue for processing.
    * This job runs at 7:30am Sunday-Saturday
    */
-  @Cron('0 54 17 * * 1-7', { name: 'newMembersEmailNotifications' })
+  @Cron('0 2 18 * * 1-7', { name: 'newMembersEmailNotifications' })
   public async triggerNewMembersEmail() {
     const newMembersData = await this.getDueAnnualNewMembers(7);
 
