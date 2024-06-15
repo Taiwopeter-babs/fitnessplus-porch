@@ -123,13 +123,6 @@ export class MemberRepository {
     try {
       await this.findMemberById(memberId);
 
-      //   const updateData = {
-      //     firstName: data.firstName,
-      //     lastName: data.lastName,
-      //     memebershipType: data.membershipType,
-      //     annualStartDate: data.phone,
-      //   };
-
       await this.repo.update(memberId, { ...data } as Member);
 
       return true;

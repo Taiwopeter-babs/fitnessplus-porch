@@ -1,5 +1,5 @@
 import { Controller, UseFilters } from '@nestjs/common';
-import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
+import { EventPattern, Payload } from '@nestjs/microservices';
 import { MicroServicesExceptionFilter } from '../utils/exceptions/exceptionFilter';
 import { EmailService } from './email.service';
 import { IAnnualNewMembersEmail } from '../cron/cron.types';
@@ -13,9 +13,7 @@ export class EmailController {
   public async sendMailToNewMembers(@Payload() member: IAnnualNewMembersEmail) {
     try {
       await this.emailService.sendEmailToNewMember(member);
-      console.log('Emails sent');
     } catch (error) {
-      console.error(error);
       console.log('Emails sending failed');
     }
   }

@@ -80,6 +80,9 @@ export class MemberDto {
   public dueDate: string;
 
   @Expose()
+  amount: number;
+
+  @Expose()
   public isFirstMonth: boolean;
 
   @Expose()

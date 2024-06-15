@@ -11,6 +11,8 @@ import { Cron } from '@nestjs/schedule';
 import { ClientProxy } from '@nestjs/microservices';
 
 import { IAnnualNewMembersEmail } from './cron.types';
+import { SubscriptionDto } from 'src/subscription/subscription.dto';
+import { MemberDto } from 'src/member/member.dto';
 
 @Injectable()
 export class CronService {
@@ -25,13 +27,12 @@ export class CronService {
    * handle send new members jobs to rabbitmq email queue for processing.
    * This job runs at 7:30am Sunday-Saturday
    */
-  @Cron('15 30 16 * * 1-7', { name: 'newMembersEmailNotifications' })
+  @Cron('0 54 17 * * 1-7', { name: 'newMembersEmailNotifications' })
   public async triggerNewMembersEmail() {
     const newMembersData = await this.getDueAnnualNewMembers(7);
 
     // enqueue each member's data
     for (const data of newMembersData) {
-      // console.log(data);
       this.emailService.emit('newMembersEmailNotifications', data);
     }
   }
@@ -40,23 +41,24 @@ export class CronService {
    * Gets the new members who subscribed for annual basic/premium
    * and subscriptions are due `reminderDays` from current date.
    */
-  public async getDueAnnualNewMembers(reminderDays: number) {
-    // get current date string
+  private async getDueAnnualNewMembers(reminderDays: number) {
     const { currentDateString } = this.getCurrentDateParams();
 
     // find members who match first month and whose due date - reminderDays
     // match the current date
     const condition: FindOptionsWhere<Member> = {
       isFirstMonth: true,
+
       dueDate: Raw(
         // NOTE!!!
         // raw postgresql query for date subtraction
         // No risk of sql injection except the error comes from a developer's input
-        (alias) => `${alias} - ${reminderDays} = :date`,
+        (alias) => `${alias} - ${reminderDays} <= :date`,
         {
           date: currentDateString,
         },
       ),
+
       isPaid: false,
     };
 
@@ -65,19 +67,56 @@ export class CronService {
 
     // format data for email processable template
     const membersEmailData: IAnnualNewMembersEmail[] = dueNewAnnualMembers.map(
-      (member) => {
-        const formattedDueDate = format(member.dueDate, 'MMMM dd, yyyy');
-        return {
-          memberFirstName: member.firstName,
-          membershipType: member.membershipType,
-          dueDate: formattedDueDate,
-          invoiceLink: member.invoiceLink,
-          email: member.email,
-        };
-      },
+      this.processMemberEmailData,
     );
 
     return membersEmailData;
+  }
+
+  /**
+   * Processes the memberDto data for email notofications
+   * @param member member's data to be processed
+   * @returns
+   */
+  private processMemberEmailData(member: MemberDto): IAnnualNewMembersEmail {
+    const formattedDueDate = format(member.dueDate, 'MMMM dd, yyyy');
+
+    // local function to compute the combined annual and first month subscription fee
+    const computeCombinedAmount = (
+      annualFee: number,
+      subscriptions: SubscriptionDto[],
+    ) => {
+      if (subscriptions.length === 0) {
+        return annualFee;
+      }
+
+      const combinedAmount = subscriptions
+        .map((sub) => sub.amount)
+        .reduce((acc, currVal) => acc + currVal, annualFee);
+
+      return combinedAmount;
+    };
+
+    const memberEmailData: IAnnualNewMembersEmail = {
+      memberFirstName: member.firstName,
+
+      membershipType: member.membershipType,
+
+      dueDate: formattedDueDate,
+
+      invoiceLink: member.invoiceLink,
+
+      email: member.email,
+
+      combinedAnnualAndFirstMonthFee: computeCombinedAmount(
+        member.amount,
+        member.subscriptions,
+      ),
+    };
+
+    console.log(memberEmailData);
+
+    return memberEmailData;
   }
 
   /**
