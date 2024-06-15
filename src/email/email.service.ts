@@ -1,53 +1,55 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 
-import Mailjet from 'node-mailjet';
-import { LibraryResponse } from 'node-mailjet';
-import { newMembersEmailTemplate } from './emai.template';
+// import Mailjet from 'node-mailjet';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const path = require('path');
 
-import { INewMembersEmail } from './email.type';
-import { RequestData } from 'node-mailjet/declarations/request/Request';
+import { IAnnualNewMembersEmail } from '../cron/cron.types';
+import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class EmailService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private mailerService: MailerService) {}
 
-  public async sendEmailToNewMembers(newMembers: INewMembersEmail[]) {
-    const mailjet = new Mailjet({
-      apiKey: this.configService.get<string>('MJ_APIKEY_PUBLIC'),
-      apiSecret: this.configService.get<string>('MJ_APIKEY_PRIVATE'),
-    });
+  public async sendEmailToNewMember(member: IAnnualNewMembersEmail) {
+    console.log(member);
 
-    console.log(newMembers);
+    // const emailsOptions = newMembers.map((member) => {
+    //   return {
+    //     to: member.email,
+    //     from: 'Fitness+ Gym Support',
+    //     subject: `Fitness+ Membership Reminder - ${member.membershipType}`,
+    //     template: path.resolve(__dirname, 'templates/newMember'),
+    //     context: {
+    //       memberFirstName: member.memberFirstName,
+    //       membershipType: member.membershipType,
+    //       dueDate: member.dueDate,
+    //       invoiceLink: member.invoiceLink,
+    //     },
+    //   } as ISendMailOptions;
+    // });
 
-    const emailsToSend: Promise<LibraryResponse<RequestData>>[] =
-      newMembers.map((member) => {
-        const request = mailjet.post('send').request({
-          FromEmail: 'babalolataiwop@gmail.com',
-          FromName: 'Fitness+ Gym',
-          Subject: `Fitness+ Membership Reminder - ${member.membershipType}`,
-          'Mj-TemplateLanguage': 'true',
-          'Mj-TemplateID': '',
-          'Html-part': newMembersEmailTemplate,
+    // // construct a promise object of the emails to be sent
+    // const transporterEmailObjects = emailsOptions.map((option) => {
+    //   return this.mailerService.sendMail(option);
+    // });
 
-          Recipients: [
-            {
-              Email: 'passenger1@mailjet.com',
-              Name: 'passenger 1',
-              Vars: {
-                memberFirstName: member.memberFirstName,
-                membershipType: member.membershipType,
-                dueDate: member.dueDate,
-                invoiceLink: member.invoiceLink,
-              },
-            },
-          ],
-        });
-        return request;
-      });
+    const mailOption: ISendMailOptions = {
+      to: member.email,
+      from: 'Fitness+ Gym Support',
+      subject: `Fitness+ Membership Reminder - ${member.membershipType}`,
+      template: path.resolve(__dirname, 'templates/newMember'),
+      context: {
+        memberFirstName: member.memberFirstName,
+        membershipType: member.membershipType,
+        dueDate: member.dueDate,
+        invoiceLink: member.invoiceLink,
+      },
+    };
 
     try {
-      await Promise.all([...emailsToSend]);
+      const resp = await this.mailerService.sendMail(mailOption);
+      console.log(resp);
     } catch (error) {
       console.error(error);
     }

@@ -58,7 +58,7 @@ export class MemberCreateDto extends BaseDto {
 export class MemberUpdateDto extends PartialType(BaseDto) {}
 
 export class MemberDto {
-  @Expose({ name: 'membershipId' })
+  @Expose()
   id: number;
 
   @Expose()
@@ -81,6 +81,9 @@ export class MemberDto {
 
   @Expose()
   public isFirstMonth: boolean;
+
+  @Expose()
+  public isPaid: boolean;
 
   @Exclude()
   public invoiceLink: string;

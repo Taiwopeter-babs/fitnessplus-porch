@@ -8,9 +8,9 @@ import { SubscriptionService } from '../subscription/subscription.service';
 import Member from '../member/member.model';
 import { IDateParams } from './cron.types';
 import { Cron } from '@nestjs/schedule';
-import { ClientProxy, RpcException } from '@nestjs/microservices';
-import { catchError, throwError } from 'rxjs';
-import { INewMembersEmail } from 'src/email/email.type';
+import { ClientProxy } from '@nestjs/microservices';
+
+import { IAnnualNewMembersEmail } from './cron.types';
 
 @Injectable()
 export class CronService {
@@ -22,30 +22,25 @@ export class CronService {
   ) {}
 
   /**
-   * handle send new members jobs to email queue for processing.
-   * This job is run at 7:30am Sunday-Saturday
+   * handle send new members jobs to rabbitmq email queue for processing.
+   * This job runs at 7:30am Sunday-Saturday
    */
-  // @Cron('30 7 * * 0-6')
-  @Cron('0 49 23 * * 1-7')
-  public async handleNewMembersEmail() {
-    const newMembersData = await this.getDueAnnualNewMembers();
+  @Cron('15 30 16 * * 1-7', { name: 'newMembersEmailNotifications' })
+  public async triggerNewMembersEmail() {
+    const newMembersData = await this.getDueAnnualNewMembers(7);
 
-    console.log('Cron service running');
-    this.logger.debug('Called when the current second is 45');
-    return this.emailService
-      .send({ cmd: 'newMembersEmailNofitications' }, newMembersData)
-      .pipe(
-        catchError((error) =>
-          throwError(() => new RpcException(error.response)),
-        ),
-      );
+    // enqueue each member's data
+    for (const data of newMembersData) {
+      // console.log(data);
+      this.emailService.emit('newMembersEmailNotifications', data);
+    }
   }
 
   /**
    * Gets the new members who subscribed for annual basic/premium
    * and subscriptions are due `reminderDays` from current date.
    */
-  public async getDueAnnualNewMembers() {
+  public async getDueAnnualNewMembers(reminderDays: number) {
     // get current date string
     const { currentDateString } = this.getCurrentDateParams();
 
@@ -53,17 +48,23 @@ export class CronService {
     // match the current date
     const condition: FindOptionsWhere<Member> = {
       isFirstMonth: true,
-      dueDate: Raw((alias) => `${alias} - INTERVAL '7 days' = :date`, {
-        // days: reminderDays,
-        date: currentDateString,
-      }),
+      dueDate: Raw(
+        // NOTE!!!
+        // raw postgresql query for date subtraction
+        // No risk of sql injection except the error comes from a developer's input
+        (alias) => `${alias} - ${reminderDays} = :date`,
+        {
+          date: currentDateString,
+        },
+      ),
       isPaid: false,
     };
 
     const dueNewAnnualMembers =
       await this.memberService.getMembersByCondition(condition);
 
-    const membersEmailData: INewMembersEmail[] = dueNewAnnualMembers.map(
+    // format data for email processable template
+    const membersEmailData: IAnnualNewMembersEmail[] = dueNewAnnualMembers.map(
       (member) => {
         const formattedDueDate = format(member.dueDate, 'MMMM dd, yyyy');
         return {
@@ -71,6 +72,7 @@ export class CronService {
           membershipType: member.membershipType,
           dueDate: formattedDueDate,
           invoiceLink: member.invoiceLink,
+          email: member.email,
         };
       },
     );
@@ -83,8 +85,7 @@ export class CronService {
    * (monthly and add-on services) fall into the current date range as determined by
    * `reminderDays`.
    */
-  public async getDueExistingMembers() {
-    // get current year and month
+  private async getDueExistingMembers() {
     const { currentMonth, currentYear } = this.getCurrentDateParams();
 
     const rawQuery = Raw(

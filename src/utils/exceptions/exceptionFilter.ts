@@ -18,6 +18,8 @@ export class MicroServicesExceptionFilter
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const response = ctx.getResponse<Response>();
 
+    console.log(response);
+
     return throwError(() => this.microservicesExceptionHandler(error));
   }
 

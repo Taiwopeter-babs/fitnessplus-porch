@@ -37,6 +37,7 @@ async function bootstrap() {
         queueOptions: {
           durable: true,
         },
+        noAck: false,
       },
     },
     { inheritAppConfig: true },

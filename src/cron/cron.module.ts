@@ -5,6 +5,7 @@ import { MemberModule } from '../member/member.module';
 import { SubscriptionModule } from '../subscription/subscription.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
+import { CronController } from './cron.controller';
 
 @Module({
   imports: [ConfigModule, MemberModule, SubscriptionModule],
@@ -32,5 +33,6 @@ import { ClientProxyFactory, Transport } from '@nestjs/microservices';
       },
     },
   ],
+  controllers: [CronController],
 })
 export class CronModule {}

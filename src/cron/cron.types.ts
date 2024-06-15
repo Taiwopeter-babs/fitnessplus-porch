@@ -1,7 +1,10 @@
 export interface IAnnualNewMembersEmail {
+  email: string;
+  memberFirstName: string;
+  dueDate: string;
   membershipType: string;
-  firstMonthSubscriptionAmount: number;
-  subsequentMonthlyAmount: number;
+  firstMonthSubscriptionAmount?: number;
+  subsequentMonthlyAmount?: number;
   invoiceLink: string;
 }
 

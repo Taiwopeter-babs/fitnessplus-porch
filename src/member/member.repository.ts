@@ -95,19 +95,22 @@ export class MemberRepository {
         membershipType: member.membershipType,
         startDate: member.startDate,
         dueDate: member.dueDate,
+        amount: member.amount,
       };
 
       const newMember = await this.repo.save(dataToSave as Member);
 
       // save subscriptons of member
-      const memberSubscriptions = member.subscriptions.map((subscription) => {
-        return this.subscriptionRepo.createSubscription({
-          memberId: newMember.id,
-          data: subscription,
+      if (member.subscriptions && member.subscriptions.length !== 0) {
+        const memberSubscriptions = member.subscriptions.map((subscription) => {
+          return this.subscriptionRepo.createSubscription({
+            memberId: newMember.id,
+            data: subscription,
+          });
         });
-      });
 
-      await Promise.all([...memberSubscriptions]);
+        await Promise.all([...memberSubscriptions]);
+      }
 
       return MemberDto.fromEntity(newMember);
     } catch (error) {

@@ -19,6 +19,7 @@ const dataSource: DataSource = new DataSource({
   synchronize: configuration().NODE_ENV === 'development',
   migrations: ['./migrations/*.ts'],
   migrationsTableName: 'fitnessplus_migrations',
+  logging: true,
 });
 
 export default dataSource;
