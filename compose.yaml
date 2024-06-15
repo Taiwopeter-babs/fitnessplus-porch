@@ -1,24 +1,6 @@
 version: '3.9'
 
-# Here the instructions define your application as a service called "server".
-# This service is built from the Dockerfile in the current directory.
-# You can add other services your application may depend on here, such as a
-# database or a cache. For examples, see the Awesome Compose repository:
-# https://github.com/docker/awesome-compose
 services:
-  # server:
-  #   build:
-  #     context: .
-  #   environment:
-  #     NODE_ENV: "{NODE_ENV}"
-  #   ports:
-  #     - 3001:3001
-  #   # `depends_on` tells Docker Compose to start the database before your application.
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
-  
- 
   pg_database:
     container_name: fitnessplus_postgres
     image: 'postgres:latest'
@@ -38,17 +20,17 @@ services:
       timeout: 30s
       retries: 5
 
-  # rabbitmq:
-  #   image: rabbitmq:3-management
-  #   container_name: rabbitmq
-  #   hostname: rabbitmq
-  #   volumes:
-  #     - /var/lib/rabbitmq
-  #   ports:
-  #     - "5672:5672"
-  #     - "15672:15672"
-  #   env_file:
-  #     - path: .env
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    volumes:
+      - /var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+      - path: .env
        
 volumes:
   pg_database-data:

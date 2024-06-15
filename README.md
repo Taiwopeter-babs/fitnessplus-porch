@@ -22,6 +22,8 @@ Working out at the gym requires a lot of patience and hard work, and so does bui
 
 This application runs on node 20.10.0 and uses docker to start the postgresql and rabbitmq.
 
+See [docker-compose-file](compose.yaml)
+
 - Clone the repo
 - Install dependencies with `npm install`
 - Start the docker process with `docker compose up -d`
