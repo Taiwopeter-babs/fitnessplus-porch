@@ -1,6 +1,7 @@
 import { Exclude, Expose, plainToInstance } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsDateString,
   IsDefined,
   IsEmail,
@@ -42,6 +43,14 @@ export class BaseDto {
   @IsNumber()
   @IsDefined()
   public amount: number;
+
+  @IsBoolean()
+  @IsOptional()
+  public isPaid: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  public isFirstMonth: boolean;
 
   @IsArray()
   @IsOptional()

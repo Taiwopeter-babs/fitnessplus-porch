@@ -1,4 +1,4 @@
-export interface IAnnualNewMembersEmail {
+export interface IAnnualNewMemberEmail {
   email: string;
   memberFirstName: string;
   dueDate: string;
@@ -7,14 +7,16 @@ export interface IAnnualNewMembersEmail {
   invoiceLink: string;
 }
 
-export interface IExistingMembersEmail {
+export interface IExistingMemberEmail {
+  email: string;
+  memberFirstName: string;
   membershipType: string;
-  serviceName: string;
   totalMonthlyAmount: number;
   invoiceLink: string;
 }
 
 export interface IDateParams {
+  currentDate: Date;
   currentDateString: string;
   currentMonth: number;
   currentYear: number;

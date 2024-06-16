@@ -96,9 +96,11 @@ export class MemberRepository {
         startDate: member.startDate,
         dueDate: member.dueDate,
         amount: member.amount,
-      };
+        isPaid: member.isPaid,
+        isFirstMont: member.isFirstMonth,
+      } as unknown as Member;
 
-      const newMember = await this.repo.save(dataToSave as Member);
+      const newMember = await this.repo.save(dataToSave);
 
       // save subscriptons of member
       if (member.subscriptions && member.subscriptions.length !== 0) {
