@@ -49,7 +49,7 @@ export class EmailService {
 
       subject: `Fitness+ Membership Reminder - ${member.membershipType}`,
 
-      template: path.resolve(__dirname, 'templates/newMember'),
+      template: path.resolve(__dirname, 'templates/existingMember'),
 
       context: {
         memberFirstName: member.memberFirstName,
@@ -64,6 +64,8 @@ export class EmailService {
 
     try {
       await this.mailerService.sendMail(mailOption);
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   }
 }

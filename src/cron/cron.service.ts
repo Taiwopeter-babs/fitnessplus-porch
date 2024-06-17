@@ -26,11 +26,14 @@ export class CronService {
    * handler send new members jobs to rabbitmq email queue for processing.
    * This job runs at 7:30am Sunday-Saturday
    */
-  @Cron('0 29 0 * * 1-7', { name: 'newMembersEmailNotifications' })
+  @Cron('0 48 1 * * 1-7', { name: 'newMembersEmailNotifications' })
   public async triggerNewMembersEmail() {
     const newMembersData = await this.getDueAnnualNewMembers(6);
 
+    console.log(newMembersData);
+
     if (newMembersData.length === 0) {
+      console.log('No new data');
       return;
     }
 
@@ -44,11 +47,14 @@ export class CronService {
    * handler for sending existing members jobs to rabbitmq email queue for processing.
    * This job runs at 8:30am Sunday-Saturday
    */
-  @Cron('0 27 0 * * 1-7', { name: 'existingMembersEmailNotifications' })
+  @Cron('0 54 1 * * 1-7', { name: 'existingMembersEmailNotifications' })
   public async triggerExistingMembersEmail() {
     const existingMembersData = await this.getDueExistingMembers();
 
+    console.log(existingMembersData);
+
     if (existingMembersData.length === 0) {
+      console.log('No old data');
       return;
     }
 
@@ -96,8 +102,6 @@ export class CronService {
     const membersEmailData: IAnnualNewMemberEmail[] = dueNewAnnualMembers.map(
       this.getNewMemberEmailObject,
     );
-
-    console.log(membersEmailData);
 
     return membersEmailData;
   }
@@ -172,8 +176,6 @@ export class CronService {
 
       .map(this.getExistingMemberEmailObject);
 
-    console.log(existingMembersEmailObject);
-
     return existingMembersEmailObject;
   }
 
@@ -184,8 +186,6 @@ export class CronService {
 
     const { currentDateString, currentMonth, currentYear } =
       getCurrentDateParams();
-
-    console.log(getNumberOfDays(currentDateString, dueDate));
 
     const dueDateFilter = (dueDate: string) => {
       return (
