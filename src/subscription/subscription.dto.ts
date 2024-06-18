@@ -1,11 +1,5 @@
 import { Expose, plainToInstance } from 'class-transformer';
-import {
-  IsDateString,
-  IsDefined,
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-} from 'class-validator';
+import { IsDateString, IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
 import { PartialType } from '@nestjs/mapped-types';
 
 import Subscription, { SubscriptionName } from './subscription.model';
@@ -26,10 +20,6 @@ export class SubscriptionCreateDto {
   @IsDateString()
   @IsNotEmpty()
   public dueDate: string;
-
-  @IsNumber()
-  @IsDefined()
-  public memberId: number;
 }
 
 export class SubscriptionUpdateDto extends PartialType(SubscriptionCreateDto) {}

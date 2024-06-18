@@ -22,8 +22,14 @@ import {
 } from './member.dto';
 
 import { SubscriptionService } from '../subscription/subscription.service';
-import { SubscriptionUpdateDto } from '../subscription/subscription.dto';
-import { ISubscriptionUpdate } from 'src/subscription/subscription.types';
+import {
+  SubscriptionCreateDto,
+  SubscriptionUpdateDto,
+} from '../subscription/subscription.dto';
+import {
+  ISubscriptionCreate,
+  ISubscriptionUpdate,
+} from 'src/subscription/subscription.types';
 
 @Controller('members')
 export class MemberController {
@@ -63,7 +69,7 @@ export class MemberController {
 
     const members = await this._service.getMembers(pageParams);
 
-    return { statusCode: 200, ...members };
+    return { statusCode: 200, data: { ...members } };
   }
 
   @Put(':id')
@@ -85,6 +91,21 @@ export class MemberController {
   }
 
   // ========== SUBSCRIPTIONS =================
+
+  @Post(':id/subscriptions')
+  public async createMemberSubscription(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() subscriptionDto: SubscriptionCreateDto,
+  ) {
+    const subscriptionData: ISubscriptionCreate = {
+      memberId: id,
+      data: subscriptionDto,
+    };
+    const subscription =
+      await this.subscriptionService.createSubscription(subscriptionData);
+
+    return { statusCode: 200, data: subscription };
+  }
 
   @Get(':id/subscriptions')
   public async getMemberSubscriptions(

@@ -12,7 +12,10 @@ import { ClientProxy } from '@nestjs/microservices';
 import { IAnnualNewMemberEmail } from './cron.types';
 import { SubscriptionDto } from '../subscription/subscription.dto';
 import { MemberDto } from '../member/member.dto';
-import { getCurrentDateParams, getNumberOfDays } from '../utils/dateHelpers';
+import {
+  getCurrentDateParams,
+  getNumberOfDaysDifference,
+} from '../utils/dateHelpers';
 
 @Injectable()
 export class CronService {
@@ -26,14 +29,11 @@ export class CronService {
    * handler send new members jobs to rabbitmq email queue for processing.
    * This job runs at 7:30am Sunday-Saturday
    */
-  @Cron('0 48 1 * * 1-7', { name: 'newMembersEmailNotifications' })
+  @Cron('0 */2 2 * * 1-7', { name: 'newMembersEmailNotifications' })
   public async triggerNewMembersEmail() {
     const newMembersData = await this.getDueAnnualNewMembers(6);
 
-    console.log(newMembersData);
-
     if (newMembersData.length === 0) {
-      console.log('No new data');
       return;
     }
 
@@ -47,14 +47,11 @@ export class CronService {
    * handler for sending existing members jobs to rabbitmq email queue for processing.
    * This job runs at 8:30am Sunday-Saturday
    */
-  @Cron('0 54 1 * * 1-7', { name: 'existingMembersEmailNotifications' })
+  @Cron('0 */3 2 * * 1-7', { name: 'existingMembersEmailNotifications' })
   public async triggerExistingMembersEmail() {
     const existingMembersData = await this.getDueExistingMembers();
 
-    console.log(existingMembersData);
-
     if (existingMembersData.length === 0) {
-      console.log('No old data');
       return;
     }
 
@@ -76,23 +73,23 @@ export class CronService {
     // match the current date
     const condition: FindOptionsWhere<Member> = {
       isFirstMonth: true,
+      isPaid: false,
 
       dueDate: Raw(
         // NOTE!!!
         // raw postgresql query for date subtraction
         // No risk of sql injection for `reminderDays` except the error comes from a developer's input
         (alias) =>
-          `${alias} - ${reminderDays} <= :date
-            AND EXTRACT(month FROM ${alias}) = :month
-            AND EXTRACT(year FROM ${alias}) = :year`,
+          `EXTRACT(month FROM ${alias}) = :month
+            AND EXTRACT(year FROM ${alias}) = :year
+            AND ${alias} - :currentDateString <= ${reminderDays}
+          `,
         {
-          date: currentDateString,
+          currentDateString: currentDateString,
           month: currentMonth,
           year: currentYear,
         },
       ),
-
-      isPaid: false,
     };
 
     const dueNewAnnualMembers =
@@ -165,8 +162,6 @@ export class CronService {
     const existingMembers =
       await this.memberService.getMembersByCondition(condition);
 
-    console.log(existingMembers);
-
     // email objects of members who have main monthly subscriptions and
     // whose subscriptions due dates are equal or after the currentDate and
     // are <= 7 days from currentDate
@@ -190,8 +185,8 @@ export class CronService {
     const dueDateFilter = (dueDate: string) => {
       return (
         getYear(dueDate) === currentYear &&
-        getMonth(dueDate) === currentMonth &&
-        getNumberOfDays(currentDateString, dueDate) <= 7
+        getMonth(dueDate) + 1 === currentMonth && // getMonth function returns index 0-11
+        getNumberOfDaysDifference(currentDateString, dueDate) <= 7
       );
     };
 

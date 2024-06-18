@@ -10,6 +10,7 @@ import configuration from './utils/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronModule } from './cron/cron.module';
 import { EmailModule } from './email/email.module';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { EmailModule } from './email/email.module';
     ScheduleModule.forRoot(),
     CronModule,
     EmailModule,
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -14,7 +14,9 @@ export class MemberAlreadyExistsException extends BadRequestException {
 
 export class SubscriptionAlreadyExistsException extends BadRequestException {
   constructor(subscriptionName: string) {
-    super(`Subscription with the name: ${subscriptionName}, already exists`);
+    super(
+      `Subscription with the name: ${subscriptionName}, already exists for member`,
+    );
   }
 }
 

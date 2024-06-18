@@ -1,7 +1,7 @@
 import { format, getMonth, getYear } from 'date-fns';
 import { IDateParams } from '../cron/cron.types';
 
-export function getNumberOfDays(start: string, end: string) {
+export function getNumberOfDaysDifference(start: string, end: string) {
   const date1 = new Date(start);
   const date2 = new Date(end);
 
@@ -22,14 +22,17 @@ export function getCurrentDateParams() {
 
   const currentDateString = format(currentDate, 'yyyy-MM-dd');
 
-  const currentMonth = getMonth(currentDate);
+  // index 0-11
+  const currentMonth = getMonth(currentDate) + 1;
 
   const currentYear = getYear(currentDate);
 
-  return {
+  const params: IDateParams = {
     currentDate,
     currentMonth,
     currentYear,
     currentDateString,
-  } as IDateParams;
+  };
+
+  return params;
 }

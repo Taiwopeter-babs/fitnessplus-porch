@@ -4,10 +4,29 @@ import { ConfigService } from '@nestjs/config';
 import { ICorsConfig } from './utils/types';
 import { ValidationPipe } from '@nestjs/common';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+// import * as fs from 'node:fs';
+
 import { MicroServicesExceptionFilter } from './utils/exceptions/exceptionFilter';
+// import { MyLogger } from './logger/logger.service';
+// import * as path from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // Create logger folder
+  // const folderName = path.join(__dirname, '../logs');
+
+  // try {
+  //   if (!fs.existsSync(folderName)) {
+  //     fs.mkdirSync(folderName);
+  //   }
+  // } catch (err) {
+  //   console.error(err);
+  //   return;
+  // }
+
+  const app = await NestFactory.create(AppModule, {
+    // bufferLogs: false,
+    // logger: ['error', 'warn', 'fatal'],
+  });
 
   const configService = app.get(ConfigService);
 
@@ -42,6 +61,9 @@ async function bootstrap() {
     },
     { inheritAppConfig: true },
   );
+
+  // logger registration
+  // app.useLogger(app.get(MyLogger));
 
   // register microservices exception filter
   app.useGlobalFilters(new MicroServicesExceptionFilter());

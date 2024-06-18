@@ -43,6 +43,7 @@ export default class Subscription extends BaseModel {
   @Column({
     type: 'boolean',
     nullable: false,
+    default: false,
   })
   public isPaid: boolean;
 

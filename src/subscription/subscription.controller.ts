@@ -1,9 +1,18 @@
-import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 
 import { IPagination } from '../utils/types';
 
 import { SubscriptionService } from './subscription.service';
 import { ParamsDto } from '../member/member.dto';
+import { ISubscriptionCreate } from './subscription.types';
+import { SubscriptionCreateDto } from './subscription.dto';
 
 @Controller('subscriptions')
 export class SubscriptionController {
@@ -28,5 +37,19 @@ export class SubscriptionController {
     const subscriptions = await this._service.getSubscriptions(pageParams);
 
     return { statusCode: 200, data: subscriptions };
+  }
+
+  @Post()
+  public async createMemberSubscription(
+    @Param('id', ParseIntPipe) id: number,
+    @Query() subscriptionDto: SubscriptionCreateDto,
+  ) {
+    const data: ISubscriptionCreate = {
+      memberId: id,
+      data: subscriptionDto,
+    };
+    const subscription = await this._service.createSubscription(data);
+
+    return { statusCode: 201, data: subscription };
   }
 }

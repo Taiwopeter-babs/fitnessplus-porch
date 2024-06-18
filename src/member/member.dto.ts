@@ -105,8 +105,8 @@ export class MemberDto {
 
   static fromEntity(entity: Member): MemberDto {
     const dto = plainToInstance(MemberDto, entity, {
-      excludeExtraneousValues: true,
-      enableImplicitConversion: true,
+      // excludeExtraneousValues: true,
+      // enableImplicitConversion: true,
     });
 
     return dto;

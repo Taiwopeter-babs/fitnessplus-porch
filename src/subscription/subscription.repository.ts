@@ -56,16 +56,16 @@ export class SubscriptionRepository {
 
   public async createSubscription(params: ISubscriptionCreate) {
     try {
-      const { data } = params;
+      const { memberId, data } = params;
 
-      //   await this.findSubscriptionByNameForMember(data.name, data.memberId);
+      await this.findSubscriptionByNameForMember(data.name, memberId);
 
       const dataToSave = {
         name: data.name,
         amount: data.amount,
         startDate: data.startDate,
         dueDate: data.dueDate,
-        memberId: data.memberId,
+        memberId: memberId,
       };
 
       const subscription = await this.repo.save(dataToSave);
@@ -131,12 +131,12 @@ export class SubscriptionRepository {
   ): Promise<void> {
     try {
       const subscription = await this.repo
-        .createQueryBuilder()
-        .where(`ILIKE :name`, { name: name })
-        .andWhere('memberId = :memberId', { memberId: memberId })
+        .createQueryBuilder('subscription')
+        .where('subscription.name = :name', { name: name })
+        .andWhere('subscription.memberId = :memberId', { memberId: memberId })
         .getOne();
 
-      if (!subscription) {
+      if (subscription) {
         throw new SubscriptionAlreadyExistsException(name);
       }
     } catch (error) {

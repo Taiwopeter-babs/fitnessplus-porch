@@ -14,6 +14,9 @@ import { MemberAlreadyExistsException } from 'src/utils/exceptions/badRequest.ex
 import { MemberCreateDto, MemberDto, MemberUpdateDto } from './member.dto';
 
 import { SubscriptionRepository } from '../subscription/subscription.repository';
+// import { SubscriptionDto } from '../subscription/subscription.dto';
+// import Subscription from '../subscription/subscription.model';
+// import { ISubscriptionCreate } from 'src/subscription/subscription.types';
 
 @Injectable()
 export class MemberRepository {
@@ -97,7 +100,7 @@ export class MemberRepository {
         dueDate: member.dueDate,
         amount: member.amount,
         isPaid: member.isPaid,
-        isFirstMont: member.isFirstMonth,
+        isFirstMonth: member.isFirstMonth,
       } as unknown as Member;
 
       const newMember = await this.repo.save(dataToSave);

@@ -23,7 +23,7 @@ import Subscription from '../subscription/subscription.model';
         entities: [Member, Subscription],
         migrations: ['./migrations/*.ts'],
         migrationsTableName: 'fitnessplus_migrations',
-        logging: true,
+        logging: ['error'],
       }),
     }),
   ],
