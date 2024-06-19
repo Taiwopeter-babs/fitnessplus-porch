@@ -25,7 +25,11 @@ export class SubscriptionRepository {
   public async getMemberSubscription(
     params: Omit<ISubscriptionUpdate, 'data'>,
   ): Promise<Subscription> {
-    return (await this.findSubscriptionByCondition(params)) as Subscription;
+    const condition: FindOptionsWhere<Subscription> = {
+      id: params.subscriptionId,
+      memberId: params.memberId,
+    };
+    return (await this.findSubscriptionByCondition(condition)) as Subscription;
   }
 
   public async getSubscription(subscriptionId: number): Promise<Subscription> {

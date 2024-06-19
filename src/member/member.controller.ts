@@ -55,7 +55,7 @@ export class MemberController {
   public async getMember(@Param('id', ParseIntPipe) id: number) {
     const member = await this._service.getMember(id);
 
-    return { statusCode: 200, data: member };
+    return { statusCode: 200, member: member };
   }
 
   @Get()
@@ -69,7 +69,7 @@ export class MemberController {
 
     const members = await this._service.getMembers(pageParams);
 
-    return { statusCode: 200, data: { ...members } };
+    return { statusCode: 200, members: { ...members } };
   }
 
   @Put(':id')
@@ -104,7 +104,11 @@ export class MemberController {
     const subscription =
       await this.subscriptionService.createSubscription(subscriptionData);
 
-    return { statusCode: 200, data: subscription };
+    return {
+      statusCode: 200,
+      message: 'Subscription added to member',
+      subscription: { ...subscription },
+    };
   }
 
   @Get(':id/subscriptions')
@@ -124,20 +128,20 @@ export class MemberController {
       pageParams,
     );
 
-    return { statusCode: 200, data: subscriptions };
+    return { statusCode: 200, ...subscriptions };
   }
 
   @Get(':id/subscriptions/:subscriptionId')
   public async getMemberSubscription(
     @Param('id', ParseIntPipe) id: number,
-    @Param('id', ParseIntPipe) subscriptionId: number,
+    @Param('subscriptionId', ParseIntPipe) subscriptionId: number,
   ) {
     const subscription = await this.subscriptionService.getMemberSubscription({
       memberId: id,
       subscriptionId,
     });
 
-    return { statusCode: 200, data: subscription };
+    return { statusCode: 200, subscription: subscription };
   }
 
   @Put(':id/subscriptions/:subscriptionId')

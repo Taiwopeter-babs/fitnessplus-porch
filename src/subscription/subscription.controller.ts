@@ -22,7 +22,7 @@ export class SubscriptionController {
   public async getSubscription(@Param('id', ParseIntPipe) id: number) {
     const subscription = await this._service.getSubscription(id);
 
-    return { statusCode: 200, data: subscription };
+    return { statusCode: 200, subscription: subscription };
   }
 
   @Get()
@@ -36,7 +36,7 @@ export class SubscriptionController {
 
     const subscriptions = await this._service.getSubscriptions(pageParams);
 
-    return { statusCode: 200, data: subscriptions };
+    return { statusCode: 200, subscriptions: subscriptions };
   }
 
   @Post()
@@ -50,6 +50,6 @@ export class SubscriptionController {
     };
     const subscription = await this._service.createSubscription(data);
 
-    return { statusCode: 201, data: subscription };
+    return { statusCode: 201, subscription: subscription };
   }
 }

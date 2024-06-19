@@ -4,6 +4,11 @@ import { ConfigService } from '@nestjs/config';
 import { ICorsConfig } from './utils/types';
 import { ValidationPipe } from '@nestjs/common';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import {
+  SwaggerModule,
+  DocumentBuilder,
+  SwaggerDocumentOptions,
+} from '@nestjs/swagger';
 // import * as fs from 'node:fs';
 
 import { MicroServicesExceptionFilter } from './utils/exceptions/exceptionFilter';
@@ -67,6 +72,27 @@ async function bootstrap() {
 
   // register microservices exception filter
   app.useGlobalFilters(new MicroServicesExceptionFilter());
+
+  // ======== START OF SWAGGER SETUP CONFIG ======== //
+  const swaggerOptions: SwaggerDocumentOptions = {
+    operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
+    ignoreGlobalPrefix: false,
+  };
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Fitness+ API')
+    .setDescription('The Fitness+ API Documentation')
+    .setVersion('1.0')
+    .build();
+
+  const swaggerDocument = SwaggerModule.createDocument(
+    app,
+    swaggerConfig,
+    swaggerOptions,
+  );
+
+  SwaggerModule.setup('api/swagger', app, swaggerDocument);
+  // ======= END OF SWAGGER SETUP CONFIG ======== //
 
   await app.startAllMicroservices();
 

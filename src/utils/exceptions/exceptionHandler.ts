@@ -19,8 +19,6 @@ export default function exceptionHandler(error: Error) {
 
   console.log(error);
 
-  console.log(name);
-
   const isAvailable = exceptionsList.find((exceptions) =>
     exceptions.includes(name),
   );
@@ -28,8 +26,6 @@ export default function exceptionHandler(error: Error) {
   if (!isAvailable) {
     throw new ServerErrorException(message);
   }
-
-  console.log('Appropriate error');
 
   // throw error;
   throw error;
