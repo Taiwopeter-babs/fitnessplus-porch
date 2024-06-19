@@ -3,7 +3,9 @@
 /node_modules
 /build
 .vscode/
+
 # Logs
+log
 logs/
 *.log
 npm-debug.log*
