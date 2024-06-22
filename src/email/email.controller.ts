@@ -1,11 +1,10 @@
 import { Controller, UseFilters } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
-import { MicroServicesExceptionFilter } from '../utils/exceptions/exceptionFilter';
+
 import { EmailService } from './email.service';
-import {
-  IAnnualNewMemberEmail,
-  IExistingMemberEmail,
-} from '../cron/cron.types';
+
+import { MicroServicesExceptionFilter } from '@utils';
+import { IAnnualNewMemberEmail, IExistingMemberEmail } from '@cron';
 
 @UseFilters(new MicroServicesExceptionFilter())
 @Controller('emails')

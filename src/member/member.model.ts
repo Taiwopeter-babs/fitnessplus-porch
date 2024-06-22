@@ -1,5 +1,5 @@
-import Subscription from '../subscription/subscription.model';
-import BaseModel from '../utils/base.model';
+import { Subscription } from '@subscription';
+import { BaseModel } from '@shared';
 import { Entity, Column, OneToMany, Index } from 'typeorm';
 
 export enum MembershipType {
@@ -10,7 +10,7 @@ export enum MembershipType {
 }
 
 @Entity('members')
-export default class Member extends BaseModel {
+export class Member extends BaseModel {
   @Column({
     type: 'varchar',
     length: 128,

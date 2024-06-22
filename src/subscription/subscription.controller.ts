@@ -7,12 +7,12 @@ import {
   Query,
 } from '@nestjs/common';
 
-import { IPagination } from '../utils/types';
-
-import { SubscriptionService } from './subscription.service';
-import { ParamsDto } from '../member/member.dto';
 import { ISubscriptionCreate } from './subscription.types';
 import { SubscriptionCreateDto } from './subscription.dto';
+import { SubscriptionService } from './subscription.service';
+
+import { ParamsDto } from '@member';
+import { IPagination } from '@utils';
 
 @Controller('subscriptions')
 export class SubscriptionController {

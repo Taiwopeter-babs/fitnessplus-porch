@@ -6,7 +6,7 @@ import { ServerErrorException } from './badRequest.exception';
  * Every error is a class that is derived from HttpException
  * @param error The error
  */
-export default function exceptionHandler(error: Error) {
+export function exceptionHandler(error: Error) {
   const exceptionsList = [
     'SubscriptionNotFoundException',
     'MemberNotFoundException',

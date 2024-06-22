@@ -16,6 +16,24 @@
     "noImplicitAny": true,
     "strictBindCallApply": true,
     "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@cron/*": ["./src/cron/*"],
+      "@cron": ["./src/cron"],
+      "@database/*": ["./src/database/*"],
+      "@database": ["./src/database"],
+      "@email/*": ["./src/email/*"],
+      "@email": ["./src/email"],
+      "@logger/*": ["./src/logger/*"],
+      "@logger": ["./src/logger"],
+      "@utils/*": ["./src/utils/*"],
+      "@utils": ["./src/utils"],
+      "@member/*": ["./src/member/*"],
+      "@member": ["./src/member"],
+      "@subscription/*": ["./src/subscription/*"],
+      "@subscription": ["./src/subscription"],
+      "@shared/*": ["./src/shared/*"],
+      "@shared": ["./src/shared"]
+    }
   }
 }

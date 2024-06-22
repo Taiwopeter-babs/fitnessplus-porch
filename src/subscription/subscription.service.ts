@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
-import { IPagination, PagedMemberSubscriptionsDto } from '../utils/types';
+import { IPagination, PagedMemberSubscriptionsDto } from '@utils';
 
 import { SubscriptionRepository } from './subscription.repository';
 import { ISubscriptionCreate, ISubscriptionUpdate } from './subscription.types';
 import { SubscriptionDto } from './subscription.dto';
-import Subscription from './subscription.model';
+import { Subscription } from './subscription.model';
 
 @Injectable()
 export class SubscriptionService {

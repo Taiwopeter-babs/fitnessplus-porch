@@ -3,20 +3,18 @@ import { FindManyOptions, FindOptionsWhere, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import exceptionHandler from '../utils/exceptions/exceptionHandler';
-import { getPageParams } from '../utils/pagination';
-import { IPagination, PagedMemberDto } from '../utils/types';
-
 import Member from './member.model';
+import { MemberCreateDto, MemberDto, MemberUpdateDto } from '@member';
 
-import { MemberNotFoundException } from 'src/utils/exceptions/notFound.exception';
-import { MemberAlreadyExistsException } from 'src/utils/exceptions/badRequest.exception';
-import { MemberCreateDto, MemberDto, MemberUpdateDto } from './member.dto';
-
-import { SubscriptionRepository } from '../subscription/subscription.repository';
-// import { SubscriptionDto } from '../subscription/subscription.dto';
-// import Subscription from '../subscription/subscription.model';
-// import { ISubscriptionCreate } from 'src/subscription/subscription.types';
+import { SubscriptionRepository } from '@subscription';
+import {
+  exceptionHandler,
+  getPageParams,
+  IPagination,
+  PagedMemberDto,
+  MemberAlreadyExistsException,
+  MemberNotFoundException,
+} from '@utils';
 
 @Injectable()
 export class MemberRepository {

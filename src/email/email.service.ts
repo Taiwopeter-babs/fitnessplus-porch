@@ -3,10 +3,7 @@ import { Injectable } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path');
 
-import {
-  IAnnualNewMemberEmail,
-  IExistingMemberEmail,
-} from '../cron/cron.types';
+import { IAnnualNewMemberEmail, IExistingMemberEmail } from '@cron';
 import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()

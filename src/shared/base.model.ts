@@ -4,7 +4,7 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 
-export default abstract class BaseModel {
+export abstract class BaseModel {
   @PrimaryGeneratedColumn()
   public id: number;
 

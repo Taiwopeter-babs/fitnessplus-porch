@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { MemberRepository } from './member.repository';
 import { MemberCreateDto, MemberDto, MemberUpdateDto } from './member.dto';
-import { IPagination, PagedMemberDto } from '../utils/types';
+import { IPagination, PagedMemberDto } from '@utils';
 import { FindOptionsWhere } from 'typeorm';
 import Member from './member.model';
 

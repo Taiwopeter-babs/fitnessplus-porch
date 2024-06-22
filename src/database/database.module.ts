@@ -3,8 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSourceOptions } from 'typeorm';
 
-import Member from '../member/member.model';
-import Subscription from '../subscription/subscription.model';
+import { Member } from '@member';
+import { Subscription } from '@subscription';
 
 @Module({
   imports: [

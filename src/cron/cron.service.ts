@@ -1,25 +1,17 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { format, getMonth, getYear, isAfter } from 'date-fns';
 import { FindOptionsWhere, Raw } from 'typeorm';
-
-import { MemberService } from '../member/member.service';
-
-import Member from '../member/member.model';
-import { IExistingMemberEmail } from './cron.types';
 import { Cron } from '@nestjs/schedule';
 import { ClientProxy } from '@nestjs/microservices';
 
-import { IAnnualNewMemberEmail } from './cron.types';
-import { SubscriptionDto } from '../subscription/subscription.dto';
-import { MemberDto } from '../member/member.dto';
-import {
-  getCurrentDateParams,
-  getNumberOfDaysDifference,
-} from '../utils/dateHelpers';
+import { IExistingMemberEmail, IAnnualNewMemberEmail } from './cron.types';
+
+import { SubscriptionDto } from '@subscription';
+import { MemberDto, MemberService, Member } from '@member';
+import { getCurrentDateParams, getNumberOfDaysDifference } from '@utils';
 
 @Injectable()
 export class CronService {
-  private readonly logger = new Logger(CronService.name);
   constructor(
     private memberService: MemberService,
     @Inject('EMAIL_SERVICE') private emailService: ClientProxy,
@@ -29,7 +21,7 @@ export class CronService {
    * handler send new members jobs to rabbitmq email queue for processing.
    * This job runs at 7:30am Sunday-Saturday
    */
-  @Cron('0 */2 1 * * 1-7', { name: 'newMembersEmailNotifications' })
+  @Cron('0 40 16 * * 1-7', { name: 'newMembersEmailNotifications' })
   public async triggerNewMembersEmail() {
     const newMembersData = await this.getDueAnnualNewMembers(6);
 
@@ -47,7 +39,7 @@ export class CronService {
    * handler for sending existing members jobs to rabbitmq email queue for processing.
    * This job runs at 8:30am Sunday-Saturday
    */
-  @Cron('0 */3 1 * * 1-7', { name: 'existingMembersEmailNotifications' })
+  @Cron('0 */2 1 * * 1-7', { name: 'existingMembersEmailNotifications' })
   public async triggerExistingMembersEmail() {
     const existingMembersData = await this.getDueExistingMembers();
 

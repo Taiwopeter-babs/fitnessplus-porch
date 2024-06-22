@@ -1,5 +1,5 @@
-import Member from '../member/member.model';
-import BaseModel from '../utils/base.model';
+import { Member } from '@member';
+import { BaseModel } from '@shared';
 import { Entity, Column, ManyToOne } from 'typeorm';
 
 export enum SubscriptionName {
@@ -8,7 +8,7 @@ export enum SubscriptionName {
 }
 
 @Entity('subscriptions')
-export default class Subscription extends BaseModel {
+export class Subscription extends BaseModel {
   @Column({
     type: 'enum',
     enum: SubscriptionName,

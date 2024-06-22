@@ -12,7 +12,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { MemberService } from './member.service';
-import { IPagination } from '../utils/types';
+
+import { IPagination } from '@utils';
 
 import {
   MemberCreateDto,
@@ -21,15 +22,13 @@ import {
   ParamsDto,
 } from './member.dto';
 
-import { SubscriptionService } from '../subscription/subscription.service';
 import {
   SubscriptionCreateDto,
   SubscriptionUpdateDto,
-} from '../subscription/subscription.dto';
-import {
+  SubscriptionService,
   ISubscriptionCreate,
   ISubscriptionUpdate,
-} from 'src/subscription/subscription.types';
+} from '@subscription';
 
 @Controller('members')
 export class MemberController {
