@@ -15,11 +15,8 @@ import {
 import { PartialType } from '@nestjs/mapped-types';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import Member, { MembershipType } from './member.model';
-import {
-  SubscriptionCreateDto,
-  SubscriptionDto,
-} from '../subscription/subscription.dto';
+import { MembershipType, Member } from '@member';
+import { SubscriptionCreateDto, SubscriptionDto } from '@subscription';
 
 export class BaseDto {
   @ApiProperty()

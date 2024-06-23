@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { CronService } from './cron.service';
 
-import { MemberModule } from '../member/member.module';
-import { SubscriptionModule } from '../subscription/subscription.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
+
+import { MemberModule } from '@member';
+import { SubscriptionModule } from '@subscription';
 
 @Module({
   imports: [ConfigModule, MemberModule, SubscriptionModule],

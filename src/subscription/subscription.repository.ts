@@ -3,7 +3,13 @@ import { FindManyOptions, FindOptionsWhere, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { Subscription } from './subscription.model';
+import {
+  Subscription,
+  ISubscriptionCreate,
+  ISubscriptionUpdate,
+  SubscriptionDto,
+} from '@subscription';
+
 import {
   SubscriptionNotFoundException,
   SubscriptionAlreadyExistsException,
@@ -12,9 +18,6 @@ import {
   PagedMemberSubscriptionsDto,
   exceptionHandler,
 } from '@utils';
-
-import { SubscriptionDto } from './subscription.dto';
-import { ISubscriptionCreate, ISubscriptionUpdate } from './subscription.types';
 
 @Injectable()
 export class SubscriptionRepository {

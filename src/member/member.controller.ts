@@ -11,16 +11,16 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { MemberService } from './member.service';
 
 import { IPagination } from '@utils';
 
 import {
+  MemberService,
   MemberCreateDto,
   MemberDto,
   MemberUpdateDto,
   ParamsDto,
-} from './member.dto';
+} from '@member';
 
 import {
   SubscriptionCreateDto,
