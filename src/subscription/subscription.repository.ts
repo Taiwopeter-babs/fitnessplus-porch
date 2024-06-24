@@ -3,12 +3,9 @@ import { FindManyOptions, FindOptionsWhere, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import {
-  Subscription,
-  ISubscriptionCreate,
-  ISubscriptionUpdate,
-  SubscriptionDto,
-} from '@subscription';
+import { ISubscriptionCreate, ISubscriptionUpdate } from './subscription.types';
+import { SubscriptionDto } from './subscription.dto';
+import { Subscription } from './subscription.model';
 
 import {
   SubscriptionNotFoundException,

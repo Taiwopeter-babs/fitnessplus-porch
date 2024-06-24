@@ -3,7 +3,9 @@ import { FindManyOptions, FindOptionsWhere, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { MemberCreateDto, MemberDto, MemberUpdateDto, Member } from '@member';
+import { Member } from './member.model';
+
+import { MemberCreateDto, MemberUpdateDto, MemberDto } from './member.dto';
 
 import { SubscriptionRepository } from '@subscription';
 import {

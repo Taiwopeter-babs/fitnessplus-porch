@@ -35,7 +35,9 @@ export class EmailService {
 
     try {
       await this.mailerService.sendMail(mailOption);
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   public async sendEmailToExistingMember(member: IExistingMemberEmail) {

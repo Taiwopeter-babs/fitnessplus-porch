@@ -5,8 +5,8 @@
 import { DataSource } from 'typeorm';
 import configuration from '../utils/config';
 
-import Member from '../member/member.model';
-import Subscription from '../subscription/subscription.model';
+import { Member } from '@member';
+import { Subscription } from '@subscription';
 
 /**
  * This is for typeorm migrations generation.
@@ -14,11 +14,16 @@ import Subscription from '../subscription/subscription.model';
 const dataSource: DataSource = new DataSource({
   // TypeORM PostgreSQL DB Drivers configuration
   ...configuration().POSTGRES,
+
   entities: [Member, Subscription],
+
   // Synchronize database schema with entities
   synchronize: configuration().NODE_ENV === 'development',
+
   migrations: ['./migrations/*.ts'],
+
   migrationsTableName: 'fitnessplus_migrations',
+
   logging: ['error'],
 });
 

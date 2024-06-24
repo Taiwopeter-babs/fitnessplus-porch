@@ -3,7 +3,9 @@ import { IsDateString, IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
 import { PartialType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
 
-import Subscription, { SubscriptionName } from './subscription.model';
+import { SubscriptionName, Subscription } from './subscription.model';
+
+console.log(SubscriptionName);
 
 export class SubscriptionCreateDto {
   // @ApiProperty({ enum: ['personal training', 'towel rentals'] })

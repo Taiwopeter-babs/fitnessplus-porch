@@ -17,6 +17,7 @@ export class EmailController {
     @Ctx() context: RmqContext,
   ) {
     try {
+      console.log('email', member);
       await this.emailService.sendEmailToNewMember(member);
 
       this.messageAcknowledgment(context);

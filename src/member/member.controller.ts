@@ -14,13 +14,14 @@ import {
 
 import { IPagination } from '@utils';
 
+import { MemberService } from './member.service';
+
 import {
-  MemberService,
   MemberCreateDto,
-  MemberDto,
   MemberUpdateDto,
+  MemberDto,
   ParamsDto,
-} from '@member';
+} from './member.dto';
 
 import {
   SubscriptionCreateDto,

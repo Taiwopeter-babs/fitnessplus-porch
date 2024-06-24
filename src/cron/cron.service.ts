@@ -21,17 +21,26 @@ export class CronService {
    * handler send new members jobs to rabbitmq email queue for processing.
    * This job runs at 7:30am Sunday-Saturday
    */
-  @Cron('0 40 16 * * 1-7', { name: 'newMembersEmailNotifications' })
+  @Cron('0 9 17 * * 1-7', { name: 'newMembersEmailNotifications' })
   public async triggerNewMembersEmail() {
-    const newMembersData = await this.getDueAnnualNewMembers(6);
+    // const newMembersData = await this.getDueAnnualNewMembers(6);
+    const newMembersDataGenerator = this.getDueAnnualNewMembers(6);
 
-    if (newMembersData.length === 0) {
-      return;
-    }
+    // for await (const data of newMembersDataGenerator) {
+    //   const { value, done } = data;
+    // }
+    while (true) {
+      const data = await newMembersDataGenerator.next();
 
-    // enqueue each member's data
-    for (const data of newMembersData) {
-      this.emailService.emit('newMembersEmailNotifications', data);
+      const { value, done } = data;
+
+      if (done) {
+        return;
+      }
+
+      console.log(value);
+
+      this.emailService.emit('newMembersEmailNotifications', value);
     }
   }
 
@@ -39,7 +48,7 @@ export class CronService {
    * handler for sending existing members jobs to rabbitmq email queue for processing.
    * This job runs at 8:30am Sunday-Saturday
    */
-  @Cron('0 */2 1 * * 1-7', { name: 'existingMembersEmailNotifications' })
+  @Cron('0 45 18 * * 1-7', { name: 'existingMembersEmailNotifications' })
   public async triggerExistingMembersEmail() {
     const existingMembersData = await this.getDueExistingMembers();
 
@@ -57,7 +66,7 @@ export class CronService {
    * Gets the new members who subscribed for annual basic/premium
    * and subscriptions are due `reminderDays` from current date.
    */
-  private async getDueAnnualNewMembers(reminderDays: number) {
+  private async *getDueAnnualNewMembers(reminderDays: number) {
     const { currentDateString, currentMonth, currentYear } =
       getCurrentDateParams();
 
@@ -87,12 +96,16 @@ export class CronService {
     const dueNewAnnualMembers =
       await this.memberService.getMembersByCondition(condition);
 
+    let i = 0;
+    while (i < dueNewAnnualMembers.length) {
+      yield this.getNewMemberEmailObject(dueNewAnnualMembers[i++]);
+    }
     // format data for email template
-    const membersEmailData: IAnnualNewMemberEmail[] = dueNewAnnualMembers.map(
-      this.getNewMemberEmailObject,
-    );
+    // const membersEmailData: IAnnualNewMemberEmail[] = dueNewAnnualMembers.map(
+    //   this.getNewMemberEmailObject,
+    // );
 
-    return membersEmailData;
+    // return membersEmailData;
   }
 
   /**

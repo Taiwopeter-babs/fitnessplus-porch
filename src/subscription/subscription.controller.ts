@@ -7,11 +7,9 @@ import {
   Query,
 } from '@nestjs/common';
 
-import {
-  ISubscriptionCreate,
-  SubscriptionService,
-  SubscriptionCreateDto,
-} from '@subscription';
+import { ISubscriptionCreate } from './subscription.types';
+import { SubscriptionCreateDto } from './subscription.dto';
+import { SubscriptionService } from './subscription.service';
 
 import { ParamsDto } from '@member';
 import { IPagination } from '@utils';
